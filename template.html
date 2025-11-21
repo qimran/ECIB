@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Weekly Security Scan Report</title>
+
+  <style>
+    /* Global Reset and Variables */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --blue: #007bff;
+      --blue-light: #eaf3ff;
+      --blue-dark: #0056b3;
+      --green: #198754;
+      --yellow: #ffc107;
+      --red: #dc3545;
+      --gray-bg: #f8f9fa;
+      --border: #dee2e6;
+      --text-dark: #222;
+    }
+
+    body {
+      margin: 0;
+      background: var(--gray-bg);
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text-dark);
+      padding: 30px 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .report-container {
+      width: 94%;
+      max-width: 1100px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      padding: 24px 40px;
+    }
+
+    /* Company Banner */
+    .company-banner {
+      background: #0e74bc; /* linear-gradient(90deg, #FFFFFF, #0e74bc); , var(--blue-dark)*/
+      color: white;
+      padding: 16px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .company-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .company-logo {
+      height: 80px;
+      border-radius: 8px;
+    }
+
+    .company-name {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .company-tagline {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    /* Contact Info Section (replacing Confidential Report) */
+    .contact-info {
+      text-align: right;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .contact-info a {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    .contact-info p {
+      display: flex;
+      justify-content: flex-end; /* Align content to the right */
+      align-items: center;
+      gap: 8px; /* Space between text and icon */
+      margin: 2px 0;
+    }
+
+    .contact-icon {
+      font-size: 1.1rem; /* adjust icon size */
+    }
+
+    /* Main Report Title */
+    .main-title {
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      text-decoration: underline;
+      color: #0e74bc;
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    /* Section Titles */
+    .section-title {
+      border-bottom: 2px solid var(--border);
+      margin-top: 36px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #0e74bc;
+    }
+
+    /* Info Banners */
+    .banner {
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .info {
+      background: #e7f1ff;
+      border-left: 5px solid var(--blue);
+      color: #084298;
+    }
+
+    .warning {
+      background: #fff3cd;
+      border-left: 5px solid var(--yellow);
+      color: #664d03;
+    }
+
+    .error {
+      background: #f8d7da;
+      border-left: 5px solid var(--red);
+      color: #842029;
+    }
+
+    /* Card Container */
+    .card-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      flex: 1 1 30%;
+      background: #f4f6f8;
+      border-radius: 8px;
+      padding: 18px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      min-width: 240px;
+      transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .card .value {
+      font-size: 1.9rem;
+      margin-top: 8px;
+      font-weight: 700;
+    }
+
+    .card.success {
+      background: #dff4e8;
+      color: #0b5e34;
+      border-left: 5px solid var(--green);
+    }
+
+    .card.warning {
+      background: #fff6db;
+      color: #6a4b00;
+      border-left: 5px solid var(--yellow);
+    }
+
+    .card.error {
+      background: #fdecea;
+      color: #7a2222;
+      border-left: 5px solid var(--red);
+    }
+
+    /* Table Section */
+    .table-container {
+      overflow-x: auto;
+      margin-top: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--border);
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+
+    th {
+      background: #0e74bc;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    tr:nth-child(odd):not(.error-row):not(.warning-row) {
+      background: #ffffff;
+    }
+
+    tr:nth-child(even):not(.error-row):not(.warning-row) {
+      background: #ededf0;
+    }
+
+    .error-row {
+      background: #fceaea !important;
+    }
+
+    .warning-row {
+      background: #fff8e5 !important;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      color: #fff;
+      font-size: 0.85rem;
+    }
+
+    .badge.success {
+      background: var(--green);
+    }
+
+    .badge.warning {
+      background: var(--yellow);
+      color: #000;
+    }
+
+    .badge.error {
+      background: var(--red);
+    }
+
+    /* Code Block */
+    .code-block {
+      background-color: #f8f9fa;
+      border: 1px solid #dcdcdc;
+      border-left: 4px solid #0e74bc;
+      border-radius: 6px;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 0.9rem;
+      color: #212529;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    /* Dependency Alert Styling */
+    .dependency-alert {
+      border-radius: 8px;
+      border-left: 6px solid;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .dependency-alert h4 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+    }
+
+    .dependency-alert p {
+      margin: 0.3rem 0;
+    }
+
+    .dependency-alert small {
+      display: block;
+      margin-top: 0.5rem;
+      color: #555;
+    }
+
+    .dependency-alert.info {
+      background-color: #e7f1ff;
+      border-color: #0d6efd;
+      color: #084298;
+    }
+
+    .dependency-alert.warning {
+      background-color: #fff3cd;
+      border-color: #ffc107;
+      color: #664d03;
+    }
+
+    .dependency-alert.error {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+      color: #842029;
+    }
+
+    /* Footer Styles */
+    .report-footer {
+      border-top: 2px solid #ccc;
+      margin-top: 30px;
+      padding: 20px 40px;
+      background-color: #0e74bc;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: #FFFFFF;
+      text-align: center;
+    }
+
+    .footer-social {
+      margin-bottom: 12px;
+    }
+
+    .footer-social a {
+      display: inline-block;
+      margin: 0 8px;
+      text-decoration: none;
+    }
+
+    .footer-social img {
+      width: 22px;
+      height: 22px;
+      vertical-align: middle;
+      transition: opacity 0.3s;
+    }
+
+    .footer-social img:hover {
+      opacity: 0.7;
+    }
+
+    .footer-info p {
+      margin: 6px 0;
+      line-height: 1.4;
+    }
+
+    .footer-info a {
+      color: #FFFFFF;
+      text-decoration: none;
+    }
+
+    .footer-info a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-note {
+      color: #FFFFFF;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .report-container {
+        padding: 20px;
+      }
+      .card {
+        flex: 1 1 100%;
+      }
+      .company-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .contact-info {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="report-container">
+    <!-- Company Banner -->
+    <div class="company-banner">
+      <div class="company-left">
+        <img class="company-logo" src="images/SecurePoint 360 Logo White.svg" alt="SecurePoint 360" />
+        <!-- <div>
+          <div class="company-name">SecurePoint Technologies</div>
+          <div class="company-tagline">Ensuring Digital Safety &amp; Compliance</div>
+        </div> -->
+      </div>
+    </div>
+
+    <h2 class="main-title">WAS/EP Scan Errors Detected </h2>
+
+    <p>WAS/EP Scan Errors Detected. The report is useful for the support team to identify and fix the issues.</p>
+
+    <div class="section-title">Detailed Findings</div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Error ID</th><th>Title</th><th>created_at</th><th>updated_at</th><th>launch_datetime</th><th>ref</th><th>status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Scan Error on Server-01</td><td>2025-11-06 14:30</td><td>2025-11-06 14:30</td><td>2025-11-06 14:30</td><td>Server-01</td><td><span class="badge success">Passed</span></td></tr>
+          <tr><td>2</td><td>Scan Error on Server-02</td><td>2025-11-06 14:10</td><td>2025-11-06 14:10</td><td>2025-11-06 14:10</td><td>Server-02</td><td><span class="badge warning">Warning</span></td></tr>
+          <tr><td>3</td><td>Scan Error on Server-03</td><td>2025-11-06 13:50</td><td>2025-11-06 13:50</td><td>2025-11-06 13:50</td><td>Server-03</td><td><span class="badge error">Failed</span></td></tr>
+          <tr><td>4</td><td>Scan Error on Server-04</td><td>2025-11-06 13:40</td><td>2025-11-06 13:40</td><td>2025-11-06 13:40</td><td>Server-04</td><td><span class="badge success">Passed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-title">Data Extraction Query</div>
+    <div class="code-block">
+      SELECT title,
+        created_at,
+        updated_at,
+        launch_datetime,
+        REF,
+        status
+      FROM scans_scan
+      WHERE UPPER(status) = 'ERROR'
+        AND updated_at > (CURRENT_TIMESTAMP - interval '7 days')
+      ORDER BY updated_at DESC;
+    </div>
+
+
+    <footer class="report-footer">
+      <div class="footer-social">
+        <a href="https://www.linkedin.com/company/securepoint360/" target="_blank">
+          <img src="images/linkedin.png" alt="LinkedIn">
+        </a>
+        <a href="https://twitter.com/SecurePoint360" target="_blank">
+          <img src="images/x.png" alt="Twitter">
+        </a>
+      </div>
+
+      <div class="footer-info">
+        <p><strong>Security, compliance, and audit readiness delivered with enterprise expertise at a fraction of the cost.</strong></p>
+        <p><a href="tel:8005189311">(800) 518-9311</a> |
+        <a href="https://securepoint360.com/" target="_blank">www.securepoint360.com</a> |
+        <a href="mailto:support@securepoint360.com">support@securepoint360.com</a></p>
+        <p class="footer-note">Do not reply to this report email. Responses are not monitored.</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
